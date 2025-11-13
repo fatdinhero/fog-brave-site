@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Friends of God – FOG.brave</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin:0; font-family:system-ui, sans-serif; background:#020617; color:#e5e7eb; display:flex; flex-direction:column; min-height:100vh; }
+    header, footer { padding:1rem 1.5rem; background:#020617dd; border-bottom:1px solid #1f2937; }
+    main { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem 1rem; }
+    h1 { font-size:2.2rem; margin-bottom:0.5rem; }
+    h2 { font-size:1.2rem; font-weight:400; color:#9ca3af; margin-bottom:1.5rem; }
+    .btn { display:inline-block; margin:0.25rem; padding:0.7rem 1.4rem; border-radius:9999px; border:none; cursor:pointer; font-weight:500; }
+    .primary { background:linear-gradient(135deg,#7c3aed,#22c55e); color:white; }
+    .secondary { background:transparent; color:#e5e7eb; border:1px solid #4b5563; }
+    p { max-width:600px; margin:0.75rem auto; color:#d1d5db; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>FOG.brave</strong> – Friends of God
+  </header>
+  <main>
+    <h1>Friends of God – Hilfe, die verbindet.</h1>
+    <h2>FOG.brave ist eine globale Spendenplattform für soziale Brennpunkte und echte Hilfe.</h2>
+    <p>
+      Diese Seite ist der erste Prototyp für die Brave Site-Building Challenge.
+      Ziel: eine transparente, globale Spenden-Infrastruktur mit klarer Wirkung, Proof-of-Origin
+      und fairem Revenue-Split für alle, die helfen.
+    </p>
+    <div>
+      <button class="btn primary">Spenden (demnächst)</button>
+      <button class="btn secondary">Mehr erfahren (bald)</button>
+    </div>
+    <p style="margin-top:1.5rem; font-size:0.9rem; color:#9ca3af;">
+      Aktuell im Aufbau – diese Version dient als öffentliche Demo für fog.brave.
+    </p>
+  </main>
+  <footer>
+    © <span id="y"></span> Friends of God – fog.brave (Challenge Prototype)
+  </footer>
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</body>
+</html>
