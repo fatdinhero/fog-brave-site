@@ -1,0 +1,36 @@
+{
+  "name": "fog-brave-site",
+  "version": "1.0.0",
+  "description": "FOG.brave - Friends of God | Die weltweit transparenteste Web3-Charity-Plattform zur Bekämpfung des Welthungers",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000 || python -m http.server 8000",
+    "serve": "npx serve",
+    "dev": "npx live-server --port=8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fatdinhero/fog-brave-site.git"
+  },
+  "keywords": [
+    "web3",
+    "charity",
+    "blockchain",
+    "crypto",
+    "donation",
+    "hunger",
+    "bitcoin",
+    "ethereum",
+    "solana",
+    "brave",
+    "dapp"
+  ],
+  "author": "FOG.brave - Friends of God",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fatdinhero/fog-brave-site/issues"
+  },
+  "homepage": "https://fog.brave",
+  "devDependencies": {},
+  "dependencies": {}
+}
