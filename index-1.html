@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOG.brave - Friends of God | Web3 Charity Revolution</title>
+    <meta name="description" content="Friends of God - Die transparenteste Web3-Charity-Plattform der Welt. Beende den Welthunger bis 2025 mit Blockchain-Technologie.">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF5722;
+            --secondary: #2196F3;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --warning: #FF9800;
+            --dark: #0a0e27;
+            --darker: #050814;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-hover: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --text-dim: rgba(255, 255, 255, 0.5);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--darker);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        html {
+            overflow-x: hidden;
+        }
+
+        /* Canvas Backgrounds */
+        #particles-canvas, #globe-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #globe-canvas {
+            z-index: 1;
+        }
+        
+        @media (max-width: 768px) {
+            #globe-canvas {
+                display: none;
+            }
+        }
+
+        /* Gradient Background */
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 25%, #0a0e27 50%, #2a1f3a 75%, #0a0e27 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            pointer-events: none;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Glass Effect */
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s;
+        }
+
+        .glass:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            background: var(--glass-hover);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .glass:hover::before {
+            left: 100%;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 14, 39, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 14, 39, 0.95);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-logo .emoji {
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        .wallet-connect-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--primary), #ff7043);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(255, 87, 34, 0.4);
+        }
+
+        .wallet-connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 87, 34, 0.6);
+        }
+
+        .wallet-connect-btn.connected {
+            background: linear-gradient(135deg, var(--success), #66bb6a);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 60px;
+            position: relative;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            background: rgba(10, 14, 39, 0.6);
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .phoenix-logo {
+            font-size: 8rem;
+            margin-bottom: 30px;
+            animation: phoenix-rise 3s infinite ease-in-out;
+            filter: drop-shadow(0 0 30px rgba(255, 87, 34, 0.8)) drop-shadow(0 0 60px rgba(255, 152, 0, 0.6));
+        }
+
+        @keyframes phoenix-rise {
+            0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+            50% { transform: translateY(-20px) scale(1.05) rotate(5deg); }
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff, #ff5722, #2196f3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-text 5s ease infinite;
+            background-size: 300% 300%;
+            font-weight: 900;
+            line-height: 1.2;
+        }
+
+        @keyframes gradient-text {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-tagline {
+            font-size: 1.8rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 60px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--danger), var(--primary));
+        }
+
+        .stat-card.positive::before {
+            background: linear-gradient(90deg, var(--success), var(--secondary));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: float-icon 3s infinite ease-in-out;
+        }
+
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .stat-icon.heartbeat {
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            10%, 30% { transform: scale(1.1); }
+            20%, 40% { transform: scale(0.95); }
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            font-variant-numeric: tabular-nums;
+            background: linear-gradient(135deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+        }
+
+        .stat-sublabel {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-top: 12px;
+        }
+
+        /* Wallet Cards */
+        .wallets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .wallet-card {
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .wallet-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border-color: var(--primary);
+        }
+
+        .wallet-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .wallet-symbol {
+            font-size: 3rem;
+            margin-right: 20px;
+            font-weight: bold;
+            animation: float-icon 3s infinite ease-in-out;
+        }
+
+        .wallet-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .wallet-chain {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .wallet-address {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .wallet-address:hover {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: var(--primary);
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), #ff7043);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 87, 34, 0.5);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, var(--success), #66bb6a);
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 3rem;
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.3rem;
+            margin-bottom: 50px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 45px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #ff7043);
+            color: white;
+            box-shadow: 0 10px 30px rgba(255, 87, 34, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 87, 34, 0.6);
+        }
+
+        /* Community Section */
+        .community-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .community-card {
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .community-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--secondary);
+            box-shadow: 0 15px 50px rgba(33, 150, 243, 0.4);
+        }
+
+        .community-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .community-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .community-members {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background: linear-gradient(135deg, var(--success), #66bb6a);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 10000;
+            animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: bold;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(500px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.show {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            margin-top: 100px;
+            border-top: 2px solid var(--glass-border);
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .phoenix-logo { font-size: 5rem; }
+            .hero-tagline { font-size: 1.2rem; }
+            .stat-number { font-size: 2.5rem; }
+            .section-title { font-size: 2rem; }
+            .glass { padding: 25px; }
+            .wallet-symbol { font-size: 2rem; }
+            .hero { padding: 100px 15px 40px; min-height: auto; }
+            .hero-content { padding: 30px 15px; }
+            .stats-grid { gap: 15px; margin-top: 30px; }
+            .stat-card { padding: 25px 20px; }
+            .stat-icon { font-size: 3rem; }
+            .btn { padding: 14px 30px; font-size: 1rem; }
+            .nav-logo { font-size: 1.2rem; }
+            .nav-logo .emoji { font-size: 1.5rem; }
+            .wallet-connect-btn { padding: 10px 20px; font-size: 0.9rem; }
+            .wallets-grid { grid-template-columns: 1fr; }
+            .community-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2rem; }
+            .phoenix-logo { font-size: 4rem; }
+            .hero-tagline { font-size: 1rem; }
+            .stat-number { font-size: 2rem; }
+            .stat-label { font-size: 0.9rem; }
+            .stat-card { padding: 20px 15px; }
+        }
+
+        /* Fade In Animation */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas Layers -->
+    <canvas id="particles-canvas"></canvas>
+    <canvas id="globe-canvas"></canvas>
+    <div class="gradient-bg"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <div class="nav-logo">
+                <span class="emoji">🙏</span>
+                <span><strong>FOG</strong>.brave</span>
+            </div>
+            <button class="wallet-connect-btn" id="walletBtn" onclick="connectWallet()">
+                <span id="walletBtnText">🔗 Connect Wallet</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="phoenix-logo">🦅</div>
+                <h1>Friends of God</h1>
+                <p class="hero-tagline">
+                    Die weltweit transparenteste Web3-Charity-Plattform.<br>
+                    Beende den Welthunger bis <span id="target-year">2030</span>.
+                </p>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 30px; width: 100%; max-width: 500px;">
+                    <button class="btn btn-primary" onclick="scrollTo('wallets')" style="flex: 1; min-width: 200px;">
+                        💝 Jetzt spenden
+                    </button>
+                    <button class="btn btn-primary" onclick="connectWallet()" style="flex: 1; min-width: 200px;">
+                        🔗 Wallet verbinden
+                    </button>
+                </div>
+
+                <!-- Live Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">💔</div>
+                        <div class="stat-number" id="hunger-deaths">0</div>
+                        <div class="stat-label">Hungertote heute</div>
+                        <div class="stat-sublabel">alle 10 Sekunden stirbt ein Mensch</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💧</div>
+                        <div class="stat-number" id="thirst-deaths">0</div>
+                        <div class="stat-label">Dursttote heute</div>
+                        <div class="stat-sublabel">alle 90 Sekunden stirbt ein Kind</div>
+                    </div>
+                    <div class="stat-card positive">
+                        <div class="stat-icon">🍽️</div>
+                        <div class="stat-number" id="meals-provided">2,450</div>
+                        <div class="stat-label">Mahlzeiten</div>
+                        <div class="stat-sublabel">durch deine Spenden bereitgestellt</div>
+                    </div>
+                    <div class="stat-card positive">
+                        <div class="stat-icon heartbeat">💚</div>
+                        <div class="stat-number" id="lives-saved">182</div>
+                        <div class="stat-label">Leben gerettet</div>
+                        <div class="stat-sublabel">gemeinsam schaffen wir das</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Crypto Wallets -->
+        <div id="wallets" style="scroll-margin-top: 100px;">
+            <h2 class="section-title">💰 Multi-Chain Support</h2>
+            <p class="section-subtitle">
+                Spende mit deiner bevorzugten Blockchain - vollständig transparent und nachvollziehbar
+            </p>
+            <div class="wallets-grid">
+                <!-- Bitcoin -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-symbol" style="color: #f7931a;">₿</div>
+                        <div>
+                            <div class="wallet-name">Bitcoin</div>
+                            <div class="wallet-chain">BTC Network</div>
+                        </div>
+                    </div>
+                    <div class="wallet-address" id="btc-address">bc1qpxdaajw0lx36qkz7ujlj7rnw4taah0f66lgapa</div>
+                    <button class="copy-btn" onclick="copyAddress('btc-address', this)">📋 Kopieren</button>
+                </div>
+
+                <!-- Solana -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-symbol" style="color: #14f195;">◎</div>
+                        <div>
+                            <div class="wallet-name">Solana</div>
+                            <div class="wallet-chain">SOL Network</div>
+                        </div>
+                    </div>
+                    <div class="wallet-address" id="sol-address">6cHwfpzhQeUPJQYKyec1W88q9W7bqairrfCyxznAypUd</div>
+                    <button class="copy-btn" onclick="copyAddress('sol-address', this)">📋 Kopieren</button>
+                </div>
+
+                <!-- Ethereum -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-symbol" style="color: #627eea;">Ξ</div>
+                        <div>
+                            <div class="wallet-name">Ethereum & ERC-20</div>
+                            <div class="wallet-chain">ETH Network</div>
+                        </div>
+                    </div>
+                    <div class="wallet-address" id="eth-address">0x6AcCc1EB2BAbf50eA7669Afc7221C7fA3af17fE2</div>
+                    <button class="copy-btn" onclick="copyAddress('eth-address', this)">📋 Kopieren</button>
+                </div>
+
+                <!-- Internet Computer -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-symbol" style="color: #29abe2;">∞</div>
+                        <div>
+                            <div class="wallet-name">Internet Computer</div>
+                            <div class="wallet-chain">ICP Network</div>
+                        </div>
+                    </div>
+                    <div class="wallet-address" id="icp-address">abae213358b5aa452a0989f30797d72d137891921cb65dbdd1e1537962e0307b</div>
+                    <button class="copy-btn" onclick="copyAddress('icp-address', this)">📋 Kopieren</button>
+                </div>
+
+                <!-- Algorand -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-symbol" style="color: #ffffff;">Ⱥ</div>
+                        <div>
+                            <div class="wallet-name">Algorand</div>
+                            <div class="wallet-chain">ALGO Network</div>
+                        </div>
+                    </div>
+                    <div class="wallet-address" id="algo-address">DGXV44RO3ZSWRKRUIWTUJBVWT6HHU3DZ7TTO4ZHJI6TYQ6OOJIOKMNGROM</div>
+                    <button class="copy-btn" onclick="copyAddress('algo-address', this)">📋 Kopieren</button>
+                </div>
+
+                <!-- IoTeX -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-symbol" style="color: #00d4aa;">⟁</div>
+                        <div>
+                            <div class="wallet-name">IoTeX</div>
+                            <div class="wallet-chain">IOTX Network</div>
+                        </div>
+                    </div>
+                    <div class="wallet-address" id="iotx-address">io1j60r7aupgm88y3xzf7mu53drl6qqfjtgjqldmv</div>
+                    <button class="copy-btn" onclick="copyAddress('iotx-address', this)">📋 Kopieren</button>
+                </div>
+
+                <!-- Tron -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-symbol" style="color: #ef0027;">⊤</div>
+                        <div>
+                            <div class="wallet-name">Tron</div>
+                            <div class="wallet-chain">TRX Network</div>
+                        </div>
+                    </div>
+                    <div class="wallet-address" id="trx-address">TDYSgwMckrXKZipkd8Dx6Dnykw1zK3RqCk</div>
+                    <button class="copy-btn" onclick="copyAddress('trx-address', this)">📋 Kopieren</button>
+                </div>
+
+                <!-- Fetch.ai -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-symbol" style="color: #0212ff;">⟐</div>
+                        <div>
+                            <div class="wallet-name">Fetch.ai</div>
+                            <div class="wallet-chain">FET Network</div>
+                        </div>
+                    </div>
+                    <div class="wallet-address" id="fet-address">fetch170usf00d4nsa29lwdfggp3sev5xm0lan3xmf8m</div>
+                    <button class="copy-btn" onclick="copyAddress('fet-address', this)">📋 Kopieren</button>
+                </div>
+
+                <!-- Bittensor -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-symbol" style="color: #ff4747;">τ</div>
+                        <div>
+                            <div class="wallet-name">Bittensor</div>
+                            <div class="wallet-chain">TAO Network</div>
+                        </div>
+                    </div>
+                    <div class="wallet-address" id="tao-address">5E1u6PLoEV7ZTjKT11erCRdEWnH5Yo6p2i1mtxmnuXxP3u2A</div>
+                    <button class="copy-btn" onclick="copyAddress('tao-address', this)">📋 Kopieren</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Community Section -->
+        <div class="glass" style="margin-top: 100px;">
+            <h2 class="section-title">👥 Join Our Community</h2>
+            <p class="section-subtitle">
+                Werde Teil der globalen Bewegung zur Bekämpfung des Welthungers
+            </p>
+            <div class="community-grid">
+                <div class="community-card" onclick="window.open('https://discord.gg/fogbrave', '_blank')">
+                    <div class="community-icon">💬</div>
+                    <div class="community-name">Discord</div>
+                    <div class="community-members">15.000+ Mitglieder</div>
+                </div>
+                <div class="community-card" onclick="window.open('https://t.me/fogbrave', '_blank')">
+                    <div class="community-icon">✈️</div>
+                    <div class="community-name">Telegram</div>
+                    <div class="community-members">8.500+ Mitglieder</div>
+                </div>
+                <div class="community-card" onclick="window.open('https://twitter.com/fogbrave', '_blank')">
+                    <div class="community-icon">🐦</div>
+                    <div class="community-name">Twitter/X</div>
+                    <div class="community-members">22.000+ Follower</div>
+                </div>
+                <div class="community-card" onclick="window.open('https://github.com/fogbrave', '_blank')">
+                    <div class="community-icon">⚡</div>
+                    <div class="community-name">GitHub</div>
+                    <div class="community-members">Open Source</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Affiliate Section -->
+        <div class="glass" style="margin-top: 60px;">
+            <h3 class="section-title" style="font-size: 2rem;">🤝 Unterstütze den Entwickler</h3>
+            <p class="section-subtitle">
+                Diese Tools helfen beim Aufbau der Web3-Charity-Infrastruktur
+            </p>
+            <div class="community-grid">
+                <div class="community-card" onclick="window.open('https://www.namebase.io/register/eqlopl', '_blank')">
+                    <div class="community-icon">🌐</div>
+                    <div class="community-name">Namebase</div>
+                    <div class="community-members">Web3 Domains</div>
+                </div>
+                <div class="community-card" onclick="window.open('https://flowith.io?inv=AMHCJUB3F1950W2L', '_blank')">
+                    <div class="community-icon">🤖</div>
+                    <div class="community-name">Flowith AI</div>
+                    <div class="community-members">AI Workflow Tools</div>
+                </div>
+                <div class="community-card" onclick="window.open('https://asi1.ai/chat?webSearch=false&isAgentic=true&sharedAgentAddress=agent1qgmhqg6jp3mvr40p4n72czcxt5utg8663k8sdff5fhdzvtw3dfz5255lcr8', '_blank')">
+                    <div class="community-icon">🧠</div>
+                    <div class="community-name">ASI1.ai</div>
+                    <div class="community-members">AI Agents</div>
+                </div>
+                <div class="community-card" onclick="window.open('https://chatllm.abacus.ai/XWJBzFSXqM', '_blank')">
+                    <div class="community-icon">🔬</div>
+                    <div class="community-name">Abacus AI</div>
+                    <div class="community-members">Deep Learning</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div style="font-size: 2.5rem; margin-bottom: 20px;">🙏</div>
+            <p><strong>FOG.brave</strong> - Friends of God</p>
+            <p>Welthunger besiegen bis <span id="footer-target-year">2030</span> | Web3 Charity Platform</p>
+            <p style="margin-top: 20px; opacity: 0.6; font-size: 0.9rem;">
+                Built with 💚 on Blockchain | IPFS Deployed | .brave Challenge <span id="current-year">2024</span>
+            </p>
+            <p style="opacity: 0.6; font-size: 0.9rem;">
+                Multi-Chain: BTC • ETH • SOL • ICP • ALGO • IOTX • TRX • FET • TAO
+            </p>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        ✅ <span id="toast-message">Adresse kopiert!</span>
+    </div>
+
+    <script>
+        // ========================================
+        // DYNAMIC YEAR CALCULATION
+        // ========================================
+        const currentYear = new Date().getFullYear();
+        const targetYear = currentYear + 6; // Immer 6 Jahre in der Zukunft
+        
+        // ========================================
+        // PARTICLE SYSTEM
+        // ========================================
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const isMobile = window.innerWidth <= 768;
+            const particleCount = isMobile ? 30 : Math.min(window.innerWidth / 10, 150);
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let particle of particles) {
+                particle.update();
+                particle.draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        resizeCanvas();
+        initParticles();
+        animateParticles();
+        window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
+
+        // ========================================
+        // 3D GLOBE (Three.js)
+        // ========================================
+        const globeCanvas = document.getElementById('globe-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: globeCanvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const geometry = new THREE.SphereGeometry(2, 64, 64);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0x2196F3,
+            emissive: 0x112244,
+            shininess: 20,
+            wireframe: false,
+            transparent: true,
+            opacity: 0.3
+        });
+        const globe = new THREE.Mesh(geometry, material);
+        scene.add(globe);
+
+        const wireframe = new THREE.LineSegments(
+            new THREE.WireframeGeometry(geometry),
+            new THREE.LineBasicMaterial({ color: 0x44aaff, transparent: true, opacity: 0.15 })
+        );
+        globe.add(wireframe);
+
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 3, 5);
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        camera.position.z = 5;
+
+        function animateGlobe() {
+            requestAnimationFrame(animateGlobe);
+            globe.rotation.y += 0.001;
+            globe.rotation.x += 0.0002;
+            renderer.render(scene, camera);
+        }
+        animateGlobe();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ========================================
+        // WEB3 WALLET CONNECTION
+        // ========================================
+        let connectedWallet = null;
+        let walletAddress = null;
+
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum !== 'undefined') {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    walletAddress = accounts[0];
+                    connectedWallet = 'ethereum';
+                    updateWalletUI();
+                    showToast('✅ Ethereum Wallet verbunden!');
+                    return;
+                }
+                if (typeof window.solana !== 'undefined' && window.solana.isPhantom) {
+                    const resp = await window.solana.connect();
+                    walletAddress = resp.publicKey.toString();
+                    connectedWallet = 'solana';
+                    updateWalletUI();
+                    showToast('✅ Solana Wallet verbunden!');
+                    return;
+                }
+                alert('❌ Keine Web3 Wallet gefunden!\n\nBitte installiere MetaMask, Phantom oder Brave Wallet.');
+            } catch (error) {
+                console.error('Wallet connection error:', error);
+                showToast('❌ Wallet-Verbindung fehlgeschlagen');
+            }
+        }
+
+        function updateWalletUI() {
+            const btn = document.getElementById('walletBtn');
+            const btnText = document.getElementById('walletBtnText');
+            if (walletAddress) {
+                const short = `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`;
+                btnText.innerHTML = `✅ ${short}`;
+                btn.classList.add('connected');
+            }
+        }
+
+        window.addEventListener('load', async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        walletAddress = accounts[0];
+                        connectedWallet = 'ethereum';
+                        updateWalletUI();
+                    }
+                } catch (error) {
+                    console.log('Auto-connect failed:', error);
+                }
+            }
+        });
+
+        // ========================================
+        // LIVE DATA SIMULATION
+        // ========================================
+        let hungerDeaths = 0;
+        let thirstDeaths = 0;
+        let mealsProvided = 2450;
+        let livesSaved = 182;
+
+        setInterval(() => {
+            hungerDeaths += 1;
+            document.getElementById('hunger-deaths').textContent = hungerDeaths.toLocaleString('de-DE');
+        }, 10000);
+
+        setInterval(() => {
+            thirstDeaths += 1;
+            document.getElementById('thirst-deaths').textContent = thirstDeaths.toLocaleString('de-DE');
+        }, 90000);
+
+        setInterval(() => {
+            mealsProvided += Math.floor(Math.random() * 15) + 5;
+            document.getElementById('meals-provided').textContent = mealsProvided.toLocaleString('de-DE');
+            if (Math.random() > 0.7) {
+                livesSaved += 1;
+                document.getElementById('lives-saved').textContent = livesSaved.toLocaleString('de-DE');
+            }
+        }, 8000);
+
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+        function copyAddress(elementId, button) {
+            const address = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(address).then(() => {
+                const originalText = button.innerHTML;
+                button.innerHTML = '✅ Kopiert!';
+                button.classList.add('copied');
+                showToast('📋 Adresse kopiert!');
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Copy error:', err);
+                alert('Fehler beim Kopieren. Bitte manuell kopieren.');
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function scrollTo(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ========================================
+        // NAVBAR SCROLL EFFECT
+        // ========================================
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ========================================
+        // INTERSECTION OBSERVER
+        // ========================================
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('animate-in'), index * 100);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -100px 0px' });
+
+        document.querySelectorAll('.glass, .wallet-card, .community-card').forEach(el => observer.observe(el));
+
+        // ========================================
+        // UPDATE DYNAMIC YEARS
+        // ========================================
+        document.getElementById('target-year').textContent = targetYear;
+        document.getElementById('footer-target-year').textContent = targetYear;
+        document.getElementById('current-year').textContent = currentYear;
+
+        console.log('🙏 FOG.brave Ultimate Edition loaded');
+        console.log(`💚 Friends of God - Ending World Hunger by ${targetYear}`);
+        console.log(`🦁 .brave Domain Challenge ${currentYear}`);
+    </script>
+</body>
+</html>
